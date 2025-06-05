@@ -1,0 +1,5 @@
+package com.api.utils;
+
+public enum OrderStatus {
+    PENDING, CANCELLED, PROCESSING, READY_FOR_PICKUP, SHIPPING, COMPLETED, REJECTED, // CANCELLED_REJECTED
+}
