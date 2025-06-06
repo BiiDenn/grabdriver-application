@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 public class RewardsFragment extends Fragment implements RewardAdapter.OnRewardClickListener {
-    private static final String TAG = "RewardsFragment";
-
     private TextView totalGemsText;
     private RecyclerView rewardsRecyclerView;
     private RewardAdapter rewardAdapter;
@@ -136,20 +134,20 @@ public class RewardsFragment extends Fragment implements RewardAdapter.OnRewardC
             
             // Lấy tiến độ phần thưởng
             apiManager.getRewardRepository().getRewardProgress(
-                    new ApiRepository.NetworkCallback<Map<String, Integer>>() {
+                    new ApiRepository.NetworkCallback<List<Reward>>() {
                 @Override
-                public void onSuccess(Map<String, Integer> result) {
+                public void onSuccess(List<Reward> result) {
                     if (getActivity() != null && result != null) {
                         getActivity().runOnUiThread(() -> {
-                            // Cập nhật tiến độ nếu cần
-                            Log.d(TAG, "Tiến độ phần thưởng: " + result);
+                            // Cập nhật tiến độ cho existing rewards trong adapter
+                            // Có thể implement logic merge reward progress với existing list nếu cần
                         });
                     }
                 }
 
                 @Override
                 public void onError(String errorMessage) {
-                    Log.e(TAG, "Lỗi khi lấy tiến độ phần thưởng: " + errorMessage);
+                    // Error handled silently
                 }
             });
         } else {

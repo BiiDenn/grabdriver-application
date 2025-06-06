@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -43,7 +42,6 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements OrderUpdateService.OrderUpdateListener {
-    private static final String TAG = "MainActivity";
     private static final int RC_LOCATION_PERMISSION = 123;
     private static final int RC_NOTIFICATION_PERMISSION = 124;
 
@@ -118,11 +116,7 @@ public class MainActivity extends AppCompatActivity implements OrderUpdateServic
         notificationPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
-                    if (isGranted) {
-                        Log.d(TAG, "Notification permission granted");
-                    } else {
-                        Log.d(TAG, "Notification permission denied");
-                    }
+                    // Permission result handled automatically
                 });
     }
 
@@ -179,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements OrderUpdateServic
 
     @AfterPermissionGranted(RC_LOCATION_PERMISSION)
     private void onLocationPermissionGranted() {
-        Log.d(TAG, "Location permission granted, starting services");
         startLocationAndUpdateServices();
     }
 
@@ -199,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements OrderUpdateServic
             OrderUpdateService.addOrderUpdateListener(this);
 
             servicesStarted = true;
-            Log.d(TAG, "Services started successfully");
         }
     }
 
@@ -223,8 +215,6 @@ public class MainActivity extends AppCompatActivity implements OrderUpdateServic
     }
 
     private void handleNewOrder(Order order) {
-        Log.d(TAG, "New order received in MainActivity: " + order.getId());
-
         // Update UI to show new order notification
         runOnUiThread(() -> {
             Toast.makeText(this, "Đơn hàng mới: #" + order.getId(), Toast.LENGTH_LONG).show();
@@ -238,8 +228,6 @@ public class MainActivity extends AppCompatActivity implements OrderUpdateServic
     }
 
     private void handleOrderUpdate(Order order) {
-        Log.d(TAG, "Order update received in MainActivity: " + order.getId());
-
         runOnUiThread(() -> {
             // Refresh fragments that might display order information
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
@@ -252,8 +240,6 @@ public class MainActivity extends AppCompatActivity implements OrderUpdateServic
     }
 
     private void handleOrderCancelled(long orderId) {
-        Log.d(TAG, "Order cancelled in MainActivity: " + orderId);
-
         runOnUiThread(() -> {
             Toast.makeText(this, "Đơn hàng #" + orderId + " đã bị hủy", Toast.LENGTH_LONG).show();
 
@@ -347,11 +333,7 @@ public class MainActivity extends AppCompatActivity implements OrderUpdateServic
     @Override
     public void onConnectionStatusChanged(boolean connected) {
         runOnUiThread(() -> {
-            if (connected) {
-                Log.d(TAG, "Connected to order update service");
-            } else {
-                Log.d(TAG, "Disconnected from order update service");
-            }
+            // Connection status changed
         });
     }
 

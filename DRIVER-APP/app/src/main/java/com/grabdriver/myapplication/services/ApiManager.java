@@ -16,8 +16,6 @@ public class ApiManager {
     private ProfileRepository profileRepository;
     private WalletRepository walletRepository;
     private RewardRepository rewardRepository;
-    private AnalyticsRepository analyticsRepository;
-    private SystemRepository systemRepository;
     
     private ApiManager(Context context) {
         this.context = context.getApplicationContext();
@@ -44,8 +42,6 @@ public class ApiManager {
         profileRepository = new ProfileRepository(context);
         walletRepository = new WalletRepository(context);
         rewardRepository = new RewardRepository(context);
-        analyticsRepository = new AnalyticsRepository(context);
-        systemRepository = new SystemRepository(context);
     }
     
     /**
@@ -83,24 +79,7 @@ public class ApiManager {
         return walletRepository;
     }
     
-    /**
-     * Lấy RewardRepository để quản lý API quà thưởng
-     */
     public RewardRepository getRewardRepository() {
         return rewardRepository;
-    }
-    
-    /**
-     * Lấy AnalyticsRepository để quản lý API thống kê
-     */
-    public AnalyticsRepository getAnalyticsRepository() {
-        return analyticsRepository;
-    }
-    
-    /**
-     * Lấy SystemRepository để quản lý API tiện ích hệ thống
-     */
-    public SystemRepository getSystemRepository() {
-        return systemRepository;
     }
 } 

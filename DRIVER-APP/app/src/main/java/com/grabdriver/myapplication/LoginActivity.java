@@ -3,7 +3,6 @@ package com.grabdriver.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
@@ -13,16 +12,13 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
-import com.grabdriver.myapplication.models.LoginRequest;
 import com.grabdriver.myapplication.models.LoginResponse;
-import com.grabdriver.myapplication.models.Shipper;
 import com.grabdriver.myapplication.services.ApiManager;
 import com.grabdriver.myapplication.services.ApiRepository;
 import com.grabdriver.myapplication.utils.NetworkUtil;
 import com.grabdriver.myapplication.utils.SessionManager;
 
 public class LoginActivity extends AppCompatActivity {
-
     private TextInputEditText etPhone, etPassword;
     private MaterialButton btnLogin;
     private MaterialCheckBox cbRememberMe;
@@ -63,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(v -> handleLogin());
 
         findViewById(R.id.tv_forgot_password).setOnClickListener(v -> {
-            // TODO: Implement forgot password functionality
             Toast.makeText(this, "Chức năng quên mật khẩu sẽ được cập nhật sớm", Toast.LENGTH_SHORT).show();
         });
     }
@@ -142,8 +137,6 @@ public class LoginActivity extends AppCompatActivity {
     private void handleLoginSuccess(LoginResponse response) {
         showLoading(false);
         Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-
-        // Navigate to main activity
         navigateToMain();
     }
 

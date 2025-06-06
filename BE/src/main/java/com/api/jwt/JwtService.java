@@ -32,7 +32,20 @@ public class JwtService {
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_PASSWORD_NOT_MATCH));
         claims.put("role", account.getRole().getRoleName());
-        long accountId = account.getUser() == null ? 1L : account.getUser().getId();
+
+        // Handle both User and Shipper accounts
+        long accountId;
+        if (account.getUser() != null) {
+            // Regular user account
+            accountId = account.getUser().getId();
+        } else if (account.getShipper() != null) {
+            // Shipper account - get shipper ID
+            accountId = account.getShipper().getId();
+        } else {
+            // Default fallback
+            accountId = account.getId();
+        }
+
         return accountId + "#" + createToken(claims, username);
     }
 

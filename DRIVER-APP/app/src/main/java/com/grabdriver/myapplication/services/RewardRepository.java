@@ -4,7 +4,9 @@ import android.content.Context;
 
 import com.grabdriver.myapplication.models.ApiResponse;
 import com.grabdriver.myapplication.models.Reward;
+import com.grabdriver.myapplication.models.RewardResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,14 +20,46 @@ public class RewardRepository extends ApiRepository {
 
     // Lấy danh sách quà thưởng hiện có
     public void getAvailableRewards(NetworkCallback<List<Reward>> callback) {
-        Call<ApiResponse<List<Reward>>> call = getApiService().getAvailableRewards();
-        executeCall(call, callback);
+        Call<ApiResponse<List<RewardResponse>>> call = getApiService().getAvailableRewards();
+        executeCall(call, new NetworkCallback<List<RewardResponse>>() {
+            @Override
+            public void onSuccess(List<RewardResponse> result) {
+                List<Reward> rewards = new ArrayList<>();
+                if (result != null) {
+                    for (RewardResponse response : result) {
+                        rewards.add(response.toReward());
+                    }
+                }
+                callback.onSuccess(rewards);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                callback.onError(errorMessage);
+            }
+        });
     }
     
     // Lấy danh sách quà thưởng đã nhận
     public void getClaimedRewards(NetworkCallback<List<Reward>> callback) {
-        Call<ApiResponse<List<Reward>>> call = getApiService().getClaimedRewards();
-        executeCall(call, callback);
+        Call<ApiResponse<List<RewardResponse>>> call = getApiService().getClaimedRewards();
+        executeCall(call, new NetworkCallback<List<RewardResponse>>() {
+            @Override
+            public void onSuccess(List<RewardResponse> result) {
+                List<Reward> rewards = new ArrayList<>();
+                if (result != null) {
+                    for (RewardResponse response : result) {
+                        rewards.add(response.toReward());
+                    }
+                }
+                callback.onSuccess(rewards);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                callback.onError(errorMessage);
+            }
+        });
     }
     
     // Nhận quà thưởng
@@ -35,8 +69,24 @@ public class RewardRepository extends ApiRepository {
     }
     
     // Lấy tiến độ quà thưởng
-    public void getRewardProgress(NetworkCallback<Map<String, Integer>> callback) {
-        Call<ApiResponse<Map<String, Integer>>> call = getApiService().getRewardProgress();
-        executeCall(call, callback);
+    public void getRewardProgress(NetworkCallback<List<Reward>> callback) {
+        Call<ApiResponse<List<RewardResponse>>> call = getApiService().getRewardProgress();
+        executeCall(call, new NetworkCallback<List<RewardResponse>>() {
+            @Override
+            public void onSuccess(List<RewardResponse> result) {
+                List<Reward> rewards = new ArrayList<>();
+                if (result != null) {
+                    for (RewardResponse response : result) {
+                        rewards.add(response.toReward());
+                    }
+                }
+                callback.onSuccess(rewards);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                callback.onError(errorMessage);
+            }
+        });
     }
 } 

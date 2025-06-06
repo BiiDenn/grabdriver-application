@@ -101,9 +101,14 @@ public class OrdersFragment extends Fragment implements OrderAdapter.OnOrderClic
                             
                             if (result != null && result.getOrders() != null && !result.getOrders().isEmpty()) {
                                 orderList.clear();
-                                orderList.addAll(result.getOrders());
+                                // Filter out any null orders from the list
+                                for (Order order : result.getOrders()) {
+                                    if (order != null) {
+                                        orderList.add(order);
+                                    }
+                                }
                                 orderAdapter.notifyDataSetChanged();
-                                showEmptyView(false);
+                                showEmptyView(orderList.isEmpty());
                             } else {
                                 orderList.clear();
                                 orderAdapter.notifyDataSetChanged();

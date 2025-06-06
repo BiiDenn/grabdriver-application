@@ -113,4 +113,13 @@ public class ProfileStatistics {
     public void setTotalCancellations(int totalCancellations) {
         this.totalCancellations = totalCancellations;
     }
+
+    // Additional methods for compatibility
+    public int getTotalOrders() {
+        return totalDeliveries;
+    }
+
+    public int getCompletedOrders() {
+        return (int) (totalDeliveries * completionRate / 100);
+    }
 } 

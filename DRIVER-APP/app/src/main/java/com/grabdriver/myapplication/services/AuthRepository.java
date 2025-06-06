@@ -26,10 +26,10 @@ public class AuthRepository extends ApiRepository {
             @Override
             public void onSuccess(LoginResponse result) {
                 // Lưu thông tin đăng nhập vào SessionManager
-                if (result != null && result.getShipper() != null) {
+                if (result != null && result.getShipperInfo() != null) {
                     sessionManager.createLoginSession(
                             result.getToken(),
-                            result.getShipper(),
+                            result.getShipperInfo(),
                             rememberMe
                     );
                 }

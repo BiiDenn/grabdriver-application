@@ -107,6 +107,10 @@ public interface OrderAssignmentRepository extends JpaRepository<OrderAssignment
        boolean existsByOrderIdAndShipperId(@Param("orderId") Long orderId,
                      @Param("shipperId") Long shipperId);
 
+       // Kiểm tra xem order đã được assign cho bất kỳ shipper nào chưa
+       @Query("SELECT COUNT(oa) > 0 FROM OrderAssignment oa WHERE oa.order.id = :orderId")
+       boolean existsByOrderId(@Param("orderId") Long orderId);
+
        // Tìm assignment chưa phản hồi của shipper
        @Query("SELECT oa FROM OrderAssignment oa WHERE " +
                      "oa.shipper.id = :shipperId AND oa.status = 'ASSIGNED' AND oa.respondedAt IS NULL")

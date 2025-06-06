@@ -28,7 +28,6 @@ import com.grabdriver.myapplication.services.ApiRepository;
 import com.grabdriver.myapplication.utils.SessionManager;
 
 public class ProfileFragment extends Fragment {
-    private static final String TAG = "ProfileFragment";
     private static final int REQUEST_IMAGE_PICK = 100;
 
     private ImageView avatarImage;
@@ -91,7 +90,6 @@ public class ProfileFragment extends Fragment {
         logoutButton.setOnClickListener(v -> showLogoutConfirmation());
 
         editProfileButton.setOnClickListener(v -> {
-            // TODO: Thêm màn hình chỉnh sửa profile
             Toast.makeText(getContext(), "Chức năng chỉnh sửa sẽ được cập nhật sớm", Toast.LENGTH_SHORT).show();
         });
 
@@ -153,7 +151,7 @@ public class ProfileFragment extends Fragment {
 
                 @Override
                 public void onError(String errorMessage) {
-                    Log.e(TAG, "Lỗi khi lấy thống kê tài khoản: " + errorMessage);
+                    // Error handled silently
                 }
             });
         } else {

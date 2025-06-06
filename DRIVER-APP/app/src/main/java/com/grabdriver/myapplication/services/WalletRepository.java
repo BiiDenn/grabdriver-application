@@ -3,6 +3,7 @@ package com.grabdriver.myapplication.services;
 import android.content.Context;
 
 import com.grabdriver.myapplication.models.ApiResponse;
+import com.grabdriver.myapplication.models.EarningsResponse;
 import com.grabdriver.myapplication.models.Transaction;
 import com.grabdriver.myapplication.models.Wallet;
 import com.grabdriver.myapplication.models.WithdrawRequest;
@@ -44,8 +45,8 @@ public class WalletRepository extends ApiRepository {
     }
     
     // Lấy thống kê thu nhập
-    public void getEarnings(String period, NetworkCallback<Map<String, Double>> callback) {
-        Call<ApiResponse<Map<String, Double>>> call = getApiService().getEarnings(period);
+    public void getEarnings(String period, NetworkCallback<EarningsResponse> callback) {
+        Call<ApiResponse<EarningsResponse>> call = getApiService().getEarnings(period);
         executeCall(call, callback);
     }
     

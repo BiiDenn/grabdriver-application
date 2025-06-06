@@ -2,6 +2,8 @@ package com.grabdriver.myapplication.services;
 
 import com.grabdriver.myapplication.models.AcceptOrderRequest;
 import com.grabdriver.myapplication.models.ApiResponse;
+import com.grabdriver.myapplication.models.DriverOrderResponse;
+import com.grabdriver.myapplication.models.EarningsResponse;
 import com.grabdriver.myapplication.models.FeedbackRequest;
 import com.grabdriver.myapplication.models.LocationUpdateRequest;
 import com.grabdriver.myapplication.models.LoginRequest;
@@ -11,6 +13,7 @@ import com.grabdriver.myapplication.models.OrderResponse;
 import com.grabdriver.myapplication.models.ProfileStatistics;
 import com.grabdriver.myapplication.models.RejectOrderRequest;
 import com.grabdriver.myapplication.models.Reward;
+import com.grabdriver.myapplication.models.RewardResponse;
 import com.grabdriver.myapplication.models.Shipper;
 import com.grabdriver.myapplication.models.ShipperProfileUpdate;
 import com.grabdriver.myapplication.models.Transaction;
@@ -54,16 +57,16 @@ public interface ApiService {
     
     // Order Management APIs
     @GET("api/driver/orders/available")
-    Call<ApiResponse<OrderResponse>> getAvailableOrders(@Query("page") int page, @Query("size") int size);
+    Call<ApiResponse<List<DriverOrderResponse>>> getAvailableOrders(@Query("page") int page, @Query("size") int size);
     
     @GET("api/driver/orders/assigned")
-    Call<ApiResponse<OrderResponse>> getAssignedOrders(@Query("page") int page, @Query("size") int size);
+    Call<ApiResponse<List<DriverOrderResponse>>> getAssignedOrders(@Query("page") int page, @Query("size") int size);
     
     @GET("api/driver/orders/history")
-    Call<ApiResponse<OrderResponse>> getOrderHistory(@Query("page") int page, @Query("size") int size, @QueryMap Map<String, String> filters);
+    Call<ApiResponse<List<DriverOrderResponse>>> getOrderHistory(@Query("page") int page, @Query("size") int size, @QueryMap Map<String, String> filters);
     
     @GET("api/driver/orders/{orderId}/details")
-    Call<ApiResponse<Order>> getOrderDetails(@Path("orderId") long orderId);
+    Call<ApiResponse<DriverOrderResponse>> getOrderDetails(@Path("orderId") long orderId);
     
     @POST("api/driver/orders/{orderId}/accept")
     Call<ApiResponse<Order>> acceptOrder(@Path("orderId") long orderId, @Body AcceptOrderRequest request);
@@ -111,23 +114,23 @@ public interface ApiService {
     Call<ApiResponse<Transaction>> withdrawMoney(@Body WithdrawRequest request);
     
     @GET("api/driver/wallet/earnings")
-    Call<ApiResponse<Map<String, Double>>> getEarnings(@Query("period") String period);
+    Call<ApiResponse<EarningsResponse>> getEarnings(@Query("period") String period);
     
     @GET("api/driver/wallet/can-withdraw")
     Call<ApiResponse<Boolean>> canWithdraw(@Query("amount") double amount);
     
     // Rewards System APIs
     @GET("api/driver/rewards/available")
-    Call<ApiResponse<List<Reward>>> getAvailableRewards();
+    Call<ApiResponse<List<RewardResponse>>> getAvailableRewards();
     
     @GET("api/driver/rewards/claimed")
-    Call<ApiResponse<List<Reward>>> getClaimedRewards();
+    Call<ApiResponse<List<RewardResponse>>> getClaimedRewards();
     
     @POST("api/driver/rewards/{rewardId}/claim")
     Call<ApiResponse<Reward>> claimReward(@Path("rewardId") long rewardId);
     
     @GET("api/driver/rewards/progress")
-    Call<ApiResponse<Map<String, Integer>>> getRewardProgress();
+    Call<ApiResponse<List<RewardResponse>>> getRewardProgress();
     
     // Analytics APIs
     @GET("api/driver/analytics/performance")

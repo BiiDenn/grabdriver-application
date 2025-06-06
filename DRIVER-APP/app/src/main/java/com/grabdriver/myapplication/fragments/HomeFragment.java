@@ -20,7 +20,9 @@ import com.grabdriver.myapplication.MainActivity;
 import com.grabdriver.myapplication.MapActivity;
 import com.grabdriver.myapplication.R;
 import com.grabdriver.myapplication.adapters.OrderAdapter;
+import com.grabdriver.myapplication.models.EarningsResponse;
 import com.grabdriver.myapplication.models.Order;
+import com.grabdriver.myapplication.models.OrderResponse;
 import com.grabdriver.myapplication.models.ProfileStatistics;
 import com.grabdriver.myapplication.models.Shipper;
 import com.grabdriver.myapplication.services.ApiManager;
@@ -35,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 public class HomeFragment extends Fragment {
-    private static final String TAG = "HomeFragment";
-
     private Switch onlineSwitch;
     private TextView statusText;
     private TextView todayEarningsText;
@@ -118,7 +118,7 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void onError(String errorMessage) {
-                    Log.e(TAG, "Lỗi khi lấy thông tin tài xế: " + errorMessage);
+                    // Error handled silently
                 }
             });
 
@@ -138,7 +138,7 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void onError(String errorMessage) {
-                    Log.e(TAG, "Lỗi khi lấy thống kê tài khoản: " + errorMessage);
+                    // Error handled silently
                 }
             });
 
@@ -150,14 +150,14 @@ public class HomeFragment extends Fragment {
     private void loadTodayEarnings() {
         if (apiManager != null) {
             apiManager.getWalletRepository().getEarnings(Constants.Period.TODAY, 
-                new ApiRepository.NetworkCallback<Map<String, Double>>() {
+                new ApiRepository.NetworkCallback<EarningsResponse>() {
                     @Override
-                    public void onSuccess(Map<String, Double> result) {
+                    public void onSuccess(EarningsResponse result) {
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
-                                if (result != null && result.containsKey("total")) {
-                                    double totalEarnings = result.get("total");
-                                    todayEarningsText.setText(String.format("₫%,.0f", totalEarnings));
+                                if (result != null) {
+                                    long todayEarnings = result.getTodayEarnings();
+                                    todayEarningsText.setText(String.format("₫%,d", todayEarnings));
                                 } else {
                                     todayEarningsText.setText("₫0");
                                 }
@@ -167,7 +167,6 @@ public class HomeFragment extends Fragment {
 
                     @Override
                     public void onError(String errorMessage) {
-                        Log.e(TAG, "Lỗi khi lấy thông tin thu nhập: " + errorMessage);
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 todayEarningsText.setText("₫0");
@@ -181,9 +180,9 @@ public class HomeFragment extends Fragment {
     private void loadAvailableOrders() {
         if (apiManager != null) {
             apiManager.getOrderRepository().getAvailableOrders(1, 10, 
-                new ApiRepository.NetworkCallback<com.grabdriver.myapplication.models.OrderResponse>() {
+                new ApiRepository.NetworkCallback<OrderResponse>() {
                     @Override
-                    public void onSuccess(com.grabdriver.myapplication.models.OrderResponse result) {
+                    public void onSuccess(OrderResponse result) {
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 if (result != null && result.getOrders() != null && !result.getOrders().isEmpty()) {
@@ -213,7 +212,6 @@ public class HomeFragment extends Fragment {
     }
 
     public void refreshOrders() {
-        Log.d(TAG, "Refreshing orders");
         loadTodayEarnings();
     }
 

@@ -29,7 +29,10 @@ public class ApiRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<T> apiResponse = response.body();
                     
-                    if (apiResponse.isStatus()) {
+                    // Check success based on HTTP status code and response code
+                    boolean isSuccess = (apiResponse.getCode() >= 200 && apiResponse.getCode() < 300) || apiResponse.isStatus();
+                    
+                    if (isSuccess) {
                         callback.onSuccess(apiResponse.getData());
                     } else {
                         String errorMsg = apiResponse.getError() != null ? apiResponse.getError() : apiResponse.getMessage();
@@ -37,13 +40,21 @@ public class ApiRepository {
                     }
                 } else {
                     String errorMsg = "Lỗi kết nối: " + response.code();
+                    if (response.errorBody() != null) {
+                        try {
+                            errorMsg += " - " + response.errorBody().string();
+                        } catch (Exception e) {
+                            // Error reading error body
+                        }
+                    }
                     callback.onError(errorMsg);
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<T>> call, Throwable t) {
-                callback.onError("Lỗi kết nối: " + t.getMessage());
+                String errorMsg = "Lỗi kết nối: " + t.getMessage();
+                callback.onError(errorMsg);
             }
         });
     }

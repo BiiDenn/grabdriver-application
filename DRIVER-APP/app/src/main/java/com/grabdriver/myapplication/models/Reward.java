@@ -219,4 +219,9 @@ public class Reward {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    // Additional method for compatibility
+    public BigDecimal getValue() {
+        return rewardValue;
+    }
 }

@@ -22,6 +22,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.grabdriver.myapplication.MainActivity;
 import com.grabdriver.myapplication.R;
 import com.grabdriver.myapplication.adapters.TransactionAdapter;
+import com.grabdriver.myapplication.models.EarningsResponse;
 import com.grabdriver.myapplication.models.Transaction;
 import com.grabdriver.myapplication.models.Wallet;
 import com.grabdriver.myapplication.services.ApiManager;
@@ -34,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 public class WalletFragment extends Fragment {
-    private static final String TAG = "WalletFragment";
-
     private TextView currentBalanceText;
     private TextView todayEarningsText;
     private TextView weekEarningsText;
@@ -50,7 +49,7 @@ public class WalletFragment extends Fragment {
     private TextView emptyTransactionsText;
 
     private ApiManager apiManager;
-    private int currentPage = 1;
+    private int currentPage = 0; // Spring pagination starts from 0
     private final int PAGE_SIZE = 20;
 
     @Nullable
@@ -98,8 +97,7 @@ public class WalletFragment extends Fragment {
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorPrimary,
                 R.color.colorAccent,
-                R.color.colorPrimaryDark
-        );
+                R.color.colorPrimaryDark);
     }
 
     private void setupWithdrawButton() {
@@ -108,7 +106,7 @@ public class WalletFragment extends Fragment {
 
     private void loadWalletData() {
         showLoading(true);
-        
+
         if (apiManager != null) {
             // Lấy thông tin ví
             apiManager.getWalletRepository().getWalletInfo(new ApiRepository.NetworkCallback<Wallet>() {
@@ -127,82 +125,81 @@ public class WalletFragment extends Fragment {
 
                 @Override
                 public void onError(String errorMessage) {
-                    Log.e(TAG, "Lỗi khi lấy thông tin ví: " + errorMessage);
+                    // Error handled silently
                 }
             });
-            
+
             // Lấy thông tin thu nhập hôm nay
-            apiManager.getWalletRepository().getEarnings(Constants.Period.TODAY, 
-                    new ApiRepository.NetworkCallback<Map<String, Double>>() {
-                @Override
-                public void onSuccess(Map<String, Double> result) {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            if (result != null && result.containsKey("total")) {
-                                todayEarningsText.setText(formatCurrency(result.get("total").longValue()));
-                            } else {
-                                todayEarningsText.setText(formatCurrency(0));
+            apiManager.getWalletRepository().getEarnings(Constants.Period.TODAY,
+                    new ApiRepository.NetworkCallback<EarningsResponse>() {
+                        @Override
+                        public void onSuccess(EarningsResponse result) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    if (result != null) {
+                                        todayEarningsText.setText(formatCurrency(result.getTodayEarnings()));
+                                    } else {
+                                        todayEarningsText.setText(formatCurrency(0));
+                                    }
+                                });
                             }
-                        });
-                    }
-                }
+                        }
 
-                @Override
-                public void onError(String errorMessage) {
-                    Log.e(TAG, "Lỗi khi lấy thu nhập hôm nay: " + errorMessage);
-                }
-            });
-            
+                        @Override
+                        public void onError(String errorMessage) {
+                            // Error handled silently
+                        }
+                    });
+
             // Lấy thông tin thu nhập tuần này
-            apiManager.getWalletRepository().getEarnings(Constants.Period.WEEK, 
-                    new ApiRepository.NetworkCallback<Map<String, Double>>() {
-                @Override
-                public void onSuccess(Map<String, Double> result) {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            if (result != null && result.containsKey("total")) {
-                                weekEarningsText.setText(formatCurrency(result.get("total").longValue()));
-                            } else {
-                                weekEarningsText.setText(formatCurrency(0));
+            apiManager.getWalletRepository().getEarnings(Constants.Period.WEEK,
+                    new ApiRepository.NetworkCallback<EarningsResponse>() {
+                        @Override
+                        public void onSuccess(EarningsResponse result) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    if (result != null) {
+                                        weekEarningsText.setText(formatCurrency(result.getWeekEarnings()));
+                                    } else {
+                                        weekEarningsText.setText(formatCurrency(0));
+                                    }
+                                });
                             }
-                        });
-                    }
-                }
+                        }
 
-                @Override
-                public void onError(String errorMessage) {
-                    Log.e(TAG, "Lỗi khi lấy thu nhập tuần: " + errorMessage);
-                }
-            });
-            
+                        @Override
+                        public void onError(String errorMessage) {
+                            // Error handled silently
+                        }
+                    });
+
             // Lấy thông tin thu nhập tháng này
-            apiManager.getWalletRepository().getEarnings(Constants.Period.MONTH, 
-                    new ApiRepository.NetworkCallback<Map<String, Double>>() {
-                @Override
-                public void onSuccess(Map<String, Double> result) {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            if (result != null && result.containsKey("total")) {
-                                monthEarningsText.setText(formatCurrency(result.get("total").longValue()));
-                            } else {
-                                monthEarningsText.setText(formatCurrency(0));
-                            }
-                            
-                            showLoading(false);
-                        });
-                    }
-                }
+            apiManager.getWalletRepository().getEarnings(Constants.Period.MONTH,
+                    new ApiRepository.NetworkCallback<EarningsResponse>() {
+                        @Override
+                        public void onSuccess(EarningsResponse result) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    if (result != null) {
+                                        monthEarningsText.setText(formatCurrency(result.getMonthEarnings()));
+                                    } else {
+                                        monthEarningsText.setText(formatCurrency(0));
+                                    }
 
-                @Override
-                public void onError(String errorMessage) {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            showLoading(false);
-                        });
-                    }
-                    Log.e(TAG, "Lỗi khi lấy thu nhập tháng: " + errorMessage);
-                }
-            });
+                                    showLoading(false);
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onError(String errorMessage) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    showLoading(false);
+                                });
+                            }
+                        }
+                    });
         } else {
             showLoading(false);
         }
@@ -210,41 +207,41 @@ public class WalletFragment extends Fragment {
 
     private void loadTransactions() {
         showLoading(true);
-        
-        if (apiManager != null) {
-            apiManager.getWalletRepository().getTransactions(currentPage, PAGE_SIZE, 
-                    new ApiRepository.NetworkCallback<List<Transaction>>() {
-                @Override
-                public void onSuccess(List<Transaction> result) {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            showLoading(false);
-                            
-                            if (result != null && !result.isEmpty()) {
-                                transactionList.clear();
-                                transactionList.addAll(result);
-                                transactionAdapter.notifyDataSetChanged();
-                                showEmptyTransactions(false);
-                            } else {
-                                transactionList.clear();
-                                transactionAdapter.notifyDataSetChanged();
-                                showEmptyTransactions(true);
-                            }
-                        });
-                    }
-                }
 
-                @Override
-                public void onError(String errorMessage) {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            showLoading(false);
-                            showEmptyTransactions(true);
-                            Toast.makeText(getContext(), "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                }
-            });
+        if (apiManager != null) {
+            apiManager.getWalletRepository().getTransactions(currentPage, PAGE_SIZE,
+                    new ApiRepository.NetworkCallback<List<Transaction>>() {
+                        @Override
+                        public void onSuccess(List<Transaction> result) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    showLoading(false);
+
+                                    if (result != null && !result.isEmpty()) {
+                                        transactionList.clear();
+                                        transactionList.addAll(result);
+                                        transactionAdapter.notifyDataSetChanged();
+                                        showEmptyTransactions(false);
+                                    } else {
+                                        transactionList.clear();
+                                        transactionAdapter.notifyDataSetChanged();
+                                        showEmptyTransactions(true);
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onError(String errorMessage) {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    showLoading(false);
+                                    showEmptyTransactions(true);
+                                    Toast.makeText(getContext(), "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        }
+                    });
         } else {
             showLoading(false);
             showEmptyTransactions(true);
@@ -257,14 +254,14 @@ public class WalletFragment extends Fragment {
         EditText bankAccountInput = dialogView.findViewById(R.id.input_bank_account);
         EditText bankNameInput = dialogView.findViewById(R.id.input_bank_name);
         EditText noteInput = dialogView.findViewById(R.id.input_note);
-        
+
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle("Rút tiền")
                 .setView(dialogView)
                 .setPositiveButton("Rút tiền", null)
                 .setNegativeButton("Hủy", null)
                 .create();
-        
+
         dialog.setOnShowListener(dialogInterface -> {
             Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
             button.setOnClickListener(view -> {
@@ -272,19 +269,19 @@ public class WalletFragment extends Fragment {
                 String bankAccount = bankAccountInput.getText().toString().trim();
                 String bankName = bankNameInput.getText().toString().trim();
                 String note = noteInput.getText().toString().trim();
-                
+
                 if (amountStr.isEmpty() || bankAccount.isEmpty() || bankName.isEmpty()) {
                     Toast.makeText(getContext(), "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                
+
                 try {
                     double amount = Double.parseDouble(amountStr);
                     if (amount <= 0) {
                         Toast.makeText(getContext(), "Số tiền phải lớn hơn 0", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    
+
                     // Gọi API kiểm tra có thể rút tiền không
                     withdrawMoney(amount, bankAccount, bankName, note);
                     dialog.dismiss();
@@ -293,14 +290,14 @@ public class WalletFragment extends Fragment {
                 }
             });
         });
-        
+
         dialog.show();
     }
 
     private void withdrawMoney(double amount, String bankAccount, String bankName, String note) {
         if (apiManager != null) {
             showLoading(true);
-            
+
             // Kiểm tra có thể rút tiền không
             apiManager.getWalletRepository().canWithdraw(amount, new ApiRepository.NetworkCallback<Boolean>() {
                 @Override
@@ -309,31 +306,34 @@ public class WalletFragment extends Fragment {
                         if (result != null && result) {
                             // Nếu có thể rút tiền, thực hiện rút tiền
                             apiManager.getWalletRepository().withdrawMoney(
-                                    amount, bankAccount, bankName, note, 
+                                    amount, bankAccount, bankName, note,
                                     new ApiRepository.NetworkCallback<Transaction>() {
-                                @Override
-                                public void onSuccess(Transaction result) {
-                                    getActivity().runOnUiThread(() -> {
-                                        showLoading(false);
-                                        Toast.makeText(getContext(), "Đã gửi yêu cầu rút tiền thành công", Toast.LENGTH_SHORT).show();
-                                        
-                                        // Cập nhật lại dữ liệu
-                                        refreshData();
-                                    });
-                                }
+                                        @Override
+                                        public void onSuccess(Transaction result) {
+                                            getActivity().runOnUiThread(() -> {
+                                                showLoading(false);
+                                                Toast.makeText(getContext(), "Đã gửi yêu cầu rút tiền thành công",
+                                                        Toast.LENGTH_SHORT).show();
 
-                                @Override
-                                public void onError(String errorMessage) {
-                                    getActivity().runOnUiThread(() -> {
-                                        showLoading(false);
-                                        Toast.makeText(getContext(), "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                                // Cập nhật lại dữ liệu
+                                                refreshData();
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onError(String errorMessage) {
+                                            getActivity().runOnUiThread(() -> {
+                                                showLoading(false);
+                                                Toast.makeText(getContext(), "Lỗi: " + errorMessage, Toast.LENGTH_SHORT)
+                                                        .show();
+                                            });
+                                        }
                                     });
-                                }
-                            });
                         } else {
                             getActivity().runOnUiThread(() -> {
                                 showLoading(false);
-                                Toast.makeText(getContext(), "Không thể rút tiền với số tiền này", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Không thể rút tiền với số tiền này", Toast.LENGTH_SHORT)
+                                        .show();
                             });
                         }
                     }
@@ -353,7 +353,7 @@ public class WalletFragment extends Fragment {
     }
 
     private void refreshData() {
-        currentPage = 1;
+        currentPage = 0; // Reset to first page (0-based)
         loadWalletData();
         loadTransactions();
     }
@@ -379,7 +379,7 @@ public class WalletFragment extends Fragment {
     private String formatCurrency(long amount) {
         return String.format("%,d₫", amount);
     }
-    
+
     @Override
     public void onResume() {
         super.onResume();
